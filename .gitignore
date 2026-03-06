@@ -1,0 +1,28 @@
+# Virtual Environment
+venv/
+ENV/
+env/
+.venv/
+
+# Python caching
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Operating System files
+.DS_Store
+Thumbs.db
+
+# Flask/Development
+.env
+instance/
+*.log
+
+# IDEs
+.vscode/
+.idea/
+
+# ML specific (optional, but good for local checkpoints)
+.ipynb_checkpoints/
+checkpoint/

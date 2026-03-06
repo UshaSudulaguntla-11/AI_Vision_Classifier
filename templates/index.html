@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Vision Classifier</title>
+    <meta name="description"
+        content="Upload or capture images to classify them using an AI-powered deep learning model.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+
+    <!-- Animated Background Orbs -->
+    <div class="bg-orb bg-orb--1"></div>
+    <div class="bg-orb bg-orb--2"></div>
+    <div class="bg-orb bg-orb--3"></div>
+
+    <main class="container">
+        <!-- Hero Header -->
+        <header class="hero" id="hero">
+            <div class="hero__badge">⚡ Powered by Deep Learning</div>
+            <h1 class="hero__title">AI Vision <span class="gradient-text">Classifier</span></h1>
+            <p class="hero__subtitle">Upload an image or use your webcam to instantly identify objects with our trained
+                neural network.</p>
+        </header>
+
+        <!-- Main Content Grid -->
+        <div class="content-grid">
+
+            <!-- Left Panel — Input -->
+            <section class="card card--input" id="inputPanel">
+                <div class="card__header">
+                    <h2 class="card__title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <rect x="3" y="3" width="18" height="18" rx="2" />
+                            <circle cx="8.5" cy="8.5" r="1.5" />
+                            <path d="m21 15-5-5L5 21" />
+                        </svg>
+                        Input Image
+                    </h2>
+                    <div class="card__tabs">
+                        <button class="tab tab--active" id="tabUpload" data-tab="upload">Upload</button>
+                        <button class="tab" id="tabWebcam" data-tab="webcam">Webcam</button>
+                    </div>
+                </div>
+
+                <!-- Upload Zone -->
+                <div class="upload-zone" id="uploadZone">
+                    <div class="upload-zone__content" id="uploadContent">
+                        <div class="upload-zone__icon">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="1.5">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                <polyline points="17 8 12 3 7 8" />
+                                <line x1="12" y1="3" x2="12" y2="15" />
+                            </svg>
+                        </div>
+                        <p class="upload-zone__text">Drag & drop your image here</p>
+                        <p class="upload-zone__hint">or click to browse • JPG, PNG, WEBP</p>
+                    </div>
+                    <input type="file" id="fileInput" accept="image/*" hidden>
+                </div>
+
+                <!-- Webcam Zone (hidden by default) -->
+                <div class="webcam-zone hidden" id="webcamZone">
+                    <video id="webcamVideo" autoplay playsinline></video>
+                    <canvas id="webcamCanvas" hidden></canvas>
+                    <div class="webcam-zone__controls">
+                        <button class="btn btn--capture" id="captureBtn">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <circle cx="12" cy="12" r="10" />
+                                <circle cx="12" cy="12" r="4" fill="currentColor" />
+                            </svg>
+                            Capture
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Preview -->
+                <div class="preview hidden" id="previewSection">
+                    <img id="previewImage" alt="Preview of uploaded image">
+                    <button class="btn btn--clear" id="clearBtn" title="Clear image">✕</button>
+                </div>
+
+                <!-- Predict Button -->
+                <button class="btn btn--predict hidden" id="predictBtn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+                    </svg>
+                    Classify Image
+                </button>
+            </section>
+
+            <!-- Right Panel — Results -->
+            <section class="card card--results" id="resultsPanel">
+                <div class="card__header">
+                    <h2 class="card__title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+                        </svg>
+                        Prediction Results
+                    </h2>
+                </div>
+
+                <!-- Empty State -->
+                <div class="results-empty" id="resultsEmpty">
+                    <div class="results-empty__icon">
+                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="1">
+                            <circle cx="12" cy="12" r="10" />
+                            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+                            <line x1="12" y1="17" x2="12.01" y2="17" />
+                        </svg>
+                    </div>
+                    <p>Upload or capture an image to see predictions</p>
+                </div>
+
+                <!-- Loading State -->
+                <div class="results-loading hidden" id="resultsLoading">
+                    <div class="spinner"></div>
+                    <p>Analyzing image…</p>
+                </div>
+
+                <!-- Result Display -->
+                <div class="results-display hidden" id="resultsDisplay">
+                    <!-- Top Prediction -->
+                    <div class="top-prediction" id="topPrediction">
+                        <div class="top-prediction__label">Detected</div>
+                        <div class="top-prediction__class" id="topClass">—</div>
+                        <div class="top-prediction__confidence">
+                            <span class="confidence-value" id="topConfidence">0</span>%
+                            <span class="confidence-label">confidence</span>
+                        </div>
+                        <div class="top-prediction__ring">
+                            <svg viewBox="0 0 120 120" id="confidenceRing">
+                                <circle cx="60" cy="60" r="52" class="ring-bg" />
+                                <circle cx="60" cy="60" r="52" class="ring-fill" id="ringFill" stroke-dasharray="326.73"
+                                    stroke-dashoffset="326.73" />
+                            </svg>
+                        </div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="result-actions">
+                        <button class="btn btn--download" id="downloadBtn" title="Download Results">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                <polyline points="7 10 12 15 17 10" />
+                                <line x1="12" y1="15" x2="12" y2="3" />
+                            </svg>
+                            Export Result
+                        </button>
+                    </div>
+
+                    <!-- All Classes Breakdown -->
+                    <div class="breakdown" id="breakdown">
+                        <h3 class="breakdown__title">All Classes</h3>
+                        <div class="breakdown__bars" id="breakdownBars">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Recent History -->
+                    <div class="history" id="historySection">
+                        <h3 class="breakdown__title">Recent History</h3>
+                        <div class="history-list" id="historyList">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <footer class="footer">
+            <p>Built with TensorFlow & Flask • Image Classification Model</p>
+        </footer>
+    </main>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+
+</html>
