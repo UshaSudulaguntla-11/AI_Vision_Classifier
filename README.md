@@ -338,19 +338,6 @@ Rabbit — 2.64%
 
 ---
 
-# 🚀 Future Improvements
-
-Possible enhancements for future development:
-
-* Deploy using Docker
-* Add GPU inference support
-* Implement multi-image batch prediction
-* Integrate model retraining pipeline
-* Add REST API endpoints
-* Deploy to cloud platforms (AWS / GCP / Render)
-
----
-
 # 🎓 Learning Outcomes
 
 Through this project, the following concepts were implemented:
@@ -365,7 +352,4 @@ Through this project, the following concepts were implemented:
 
 ---
 
-# 👨‍💻 Author
-
-Sudulaguntla Usha Chowdary
 
